@@ -1,0 +1,458 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package vistaPremios;
+
+import ModeloLoteria.LoteriaDto;
+import ModeloPremio.PremioDto;
+import ModeloVentas.PersonaDto;
+import VistaPrincipal.Principal;
+import com.mxrck.autocompleter.TextAutoCompleter;
+import java.awt.Color;
+import java.io.File;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+
+/**
+ *
+ * @author carlos
+ */
+public class ConsultarPremiosInternalFrame extends javax.swing.JInternalFrame {
+
+    private Principal principal;
+    private DefaultTableModel tabla;
+    private ArrayList<PremioDto> premios;
+    private TextAutoCompleter comboLoteria;
+
+    /**
+     * Creates new form ConsultarPremiosInternalFrame
+     */
+    public ConsultarPremiosInternalFrame(Principal p) {
+        initComponents();
+        this.principal = p;
+        this.getContentPane().setBackground(Color.white);
+        this.premios = new ArrayList();
+        this.generarTabla();
+        this.comboLoteria = new TextAutoCompleter(this.txtLoteria);
+    }
+
+    public void cagarLoterias() {
+        this.comboLoteria.removeAll();
+        ArrayList<LoteriaDto> lista = this.principal.getFachada().listarLoterias();
+        for (LoteriaDto dto : lista) {
+            this.comboLoteria.addItem(dto.getCodigoNombre() + "");
+        }
+    }
+
+    /**
+     * carga la tabla y premios
+     */
+    public void cargarTablaPremios() {
+        this.txtGanador.setText("");
+        this.tabla.setRowCount(0);
+        this.tabla.fireTableDataChanged();
+        String moneda = this.traerTipoMoneda();
+        SimpleDateFormat formato = new SimpleDateFormat("yyyy/MM/dd");
+        String fecha = formato.format(this.dateFecha.getDate());
+        String v[] = this.txtLoteria.getText().split("-");
+        int codigo = Integer.parseInt(v[0]);
+        this.premios = this.principal.getFachada().consultarPremiosXFechaXMoneda(fecha, moneda, codigo);
+
+        this.txtCantidad.setText(this.premios.size() + "");
+        NumberFormat formatoNumero = NumberFormat.getNumberInstance();
+        int totalPremio = 0;
+        int totalValor = 0;
+
+        if(!this.premios.isEmpty()){
+        this.txtGanador.setText("Numero ganador: "+this.premios.get(0).getNumeroGanador());
+        }
+        
+        for (PremioDto dto : this.premios) {
+            this.tabla.fireTableDataChanged();
+            String registro[] = new String[10];
+            registro[0] = dto.getSerial();
+            registro[1] = dto.getFecha();
+            registro[2] = dto.getPersona().getCodigo() + "";
+            registro[3] = dto.getMoneda();
+            registro[4] = dto.getPagado() + "";
+            registro[5] = dto.getConsecutivo() + "";
+            registro[6] = dto.getDetPremio().getLoteria().getCodigoNombre() + "";
+            registro[7] = dto.getDetPremio().getTipoPremio().getTipoNombre() + "";
+            registro[8] = dto.getDetPremio().getValorFormato();
+            registro[9] = dto.getDetPremio().getPremioFormato() + "";
+            this.tabla.addRow(registro);
+            this.tabla.fireTableDataChanged();
+            totalPremio += dto.getDetPremio().getPremio();
+            totalValor += dto.getDetPremio().getValor();
+
+        }
+        this.txtPremio.setText(formatoNumero.format(totalPremio));
+        this.txtValor.setText(formatoNumero.format(totalValor));
+
+    }
+
+    private String traerTipoMoneda() {
+        String moneda = this.cmbMoneda.getSelectedItem().toString();
+        if (moneda.equalsIgnoreCase("Bolivares")) {
+            return "B";
+        }
+        return "p";
+    }
+
+    public void generarTabla() {
+        String tituloTabla[] = {"Serial", "Fecha", "Vendedor", "Moneda", "Pagado", "Consegre", "Loteria", "Tipo", "Valor", "Premio"};
+        this.tabla = new DefaultTableModel(null, tituloTabla);
+        this.tableConsulta.setModel(tabla);
+        DefaultTableCellRenderer Alinear = new DefaultTableCellRenderer();
+        Alinear.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        this.tableConsulta.getColumnModel().getColumn(8).setCellRenderer(Alinear);
+        this.tableConsulta.getColumnModel().getColumn(9).setCellRenderer(Alinear);
+        this.txtPremio.setHorizontalAlignment(JTextField.RIGHT);
+        this.txtValor.setHorizontalAlignment(JTextField.RIGHT);
+        this.txtCantidad.setHorizontalAlignment(JTextField.RIGHT);
+        this.dateFecha.setDate(new Date());
+
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tableConsulta = new javax.swing.JTable();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
+        dateFecha = new com.toedter.calendar.JDateChooser();
+        jLabel1 = new javax.swing.JLabel();
+        cmbMoneda = new javax.swing.JComboBox();
+        jLabel4 = new javax.swing.JLabel();
+        cmdConsultar = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
+        txtLoteria = new javax.swing.JTextField();
+        txtGanador = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        txtCantidad = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        txtValor = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        txtPremio = new javax.swing.JTextField();
+
+        setTitle("Consultar premios");
+
+        tableConsulta.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null}
+            },
+            new String [] {
+                "Serial", "Fecha", "Vendedor", "Moneda", "Pagado", "Consegre", "Loteria", "Tipo", "Valor", "Premio"
+            }
+        ));
+        tableConsulta.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tableConsultaMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tableConsulta);
+
+        jButton1.setText("Salir");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jButton2.setText("Generar pdf");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Valore de consulta"));
+
+        jLabel1.setText("Fecha: ");
+
+        cmbMoneda.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Bolivares", "Pesos" }));
+        cmbMoneda.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbMonedaActionPerformed(evt);
+            }
+        });
+
+        jLabel4.setText("Moneda: ");
+
+        cmdConsultar.setText("Consultar");
+        cmdConsultar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdConsultarActionPerformed(evt);
+            }
+        });
+
+        jLabel6.setText("Loteria: ");
+
+        txtGanador.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        txtGanador.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(dateFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtLoteria, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel4)
+                .addGap(18, 18, 18)
+                .addComponent(cmbMoneda, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(34, 34, 34)
+                .addComponent(cmdConsultar)
+                .addGap(33, 33, 33)
+                .addComponent(txtGanador, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(cmbMoneda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel4)
+                        .addComponent(cmdConsultar)
+                        .addComponent(jLabel6)
+                        .addComponent(txtLoteria, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jLabel1)
+                        .addComponent(dateFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(txtGanador, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Totales"));
+
+        jLabel2.setText("Total premios registrados: ");
+
+        txtCantidad.setFont(new java.awt.Font("Arial Black", 1, 11)); // NOI18N
+
+        jLabel5.setText("Total dinero valor registrados: ");
+
+        txtValor.setFont(new java.awt.Font("Arial Black", 1, 11)); // NOI18N
+        txtValor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtValorActionPerformed(evt);
+            }
+        });
+
+        jLabel3.setText("Total dinero premios registrados: ");
+
+        txtPremio.setFont(new java.awt.Font("Arial Black", 1, 11)); // NOI18N
+        txtPremio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtPremioActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtValor, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtPremio, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(42, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(txtCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5)
+                    .addComponent(txtValor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3)
+                    .addComponent(txtPremio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(19, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane1)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(2, 2, 2)
+                        .addComponent(jButton2)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton1)
+                        .addGap(8, 8, 8)))
+                .addGap(1, 1, 1))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(1, 1, 1)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        this.setVisible(false);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void tableConsultaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableConsultaMouseClicked
+        // TODO add your handling code here:
+          if (this.tableConsulta.getSelectedRow() >= 0) {
+
+            int seleccion = this.ventana();
+            if (seleccion == 0) {
+
+                String serial = this.tableConsulta.getValueAt(this.tableConsulta.getSelectedRow(), 0).toString();
+                String fecha = this.tableConsulta.getValueAt(this.tableConsulta.getSelectedRow(), 1).toString();
+             
+                boolean valor = this.principal.getFachada().eliminarPremio(serial, fecha);
+                if (valor) {
+                   this.cargarTablaPremios();
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "existe un error al elimnar el premio");
+
+                }
+            }
+        }
+    }//GEN-LAST:event_tableConsultaMouseClicked
+
+    private void cmdConsultarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdConsultarActionPerformed
+        // TODO add your handling code here:
+        this.cargarTablaPremios();
+
+    }//GEN-LAST:event_cmdConsultarActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        this.guardarArchivo();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void txtPremioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPremioActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtPremioActionPerformed
+
+    private void txtValorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtValorActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtValorActionPerformed
+
+    private void cmbMonedaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbMonedaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbMonedaActionPerformed
+
+    private void guardarArchivo() {
+
+        SimpleDateFormat formato = new SimpleDateFormat("yyyy/MM/dd");
+        String fecha = formato.format(this.dateFecha.getDate());
+        boolean resultado = false;
+
+        resultado = this.principal.getFachada().generarPdfPremios(this.premios, "", fecha, this.cmbMoneda.getSelectedItem().toString());
+
+        if (resultado) {
+            JOptionPane.showMessageDialog(null,
+                    "El archivo se ha guardado Exitosamente",
+                    "Información", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "ya existe un documento con ese nombre \n el documento esta en uso");
+        }
+
+    }
+
+    private int ventana() {
+        int seleccion = JOptionPane.showOptionDialog(
+                rootPane,
+                "desea eliminar el premio ",
+                "Selector de opciones ",
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                new Object[]{" si", "Cancelar"},
+                "opcion 1");
+        return seleccion;
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox cmbMoneda;
+    private javax.swing.JButton cmdConsultar;
+    private com.toedter.calendar.JDateChooser dateFecha;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable tableConsulta;
+    private javax.swing.JTextField txtCantidad;
+    private javax.swing.JLabel txtGanador;
+    private javax.swing.JTextField txtLoteria;
+    private javax.swing.JTextField txtPremio;
+    private javax.swing.JTextField txtValor;
+    // End of variables declaration//GEN-END:variables
+
+}
